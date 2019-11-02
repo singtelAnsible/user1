@@ -1,0 +1,31 @@
+- hosts: localhost
+  tasks:
+    - name: trying false
+      ping: 
+      register: result
+      ignore_errors: True
+
+    - name: trying something
+      command: /bin/something
+      ignore_errors: True
+      when: result is succeeded
+      #when: result is failed
+
+    # In older versions of ansible use ``success``, now both are valid but succeeded uses the correct tense.
+    - name: trying something_else succeeded
+      command: /bin/something_else
+      ignore_errors: True
+      when: result is succeeded
+
+    - name: trying something_else skipped
+      command: /bin/still/something_else
+      ignore_errors: True
+      when: result is failed
+
+    - name: when using ==
+      debug: 
+        msg: "{{ansible_facts['os_family']}}"
+      
+    - name: when using ==
+      ping: 
+      when: ansible_facts['os_family'] == "Debian"
